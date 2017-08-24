@@ -7,7 +7,24 @@ $(function() {
     var $uppercase = $('.uppercase'),
         $lowercase = $('.lowercase'),
         $audioCtrl = $('#audioCtrl'),
-        $result = $('#result');
+        $result = $('#result'),
+        $mod = $('#mod'),
+        $letter = $('#letter');
+        
+    //听力模式
+    if (sessionStorage['letter-practice-mod'] == 'listen') {
+        $letter.addClass('off');
+        $mod.prop('checked', true);
+    }
+    $mod.on('change', function() {
+        if ($(this).is(':checked')) {
+            sessionStorage['letter-practice-mod'] = 'listen';
+            $letter.addClass('off');
+        } else {
+            sessionStorage['letter-practice-mod'] = 'normal';
+            $letter.removeClass('off');
+        }
+    });
 
     //播放音乐
     var audio = null;
@@ -18,6 +35,9 @@ $(function() {
         audio.src = 'sound/' + type + '.mp3';
         audio.play();
     };
+
+    //速度显示
+    var speed = new Speed();
 
     //选取随机字母
     var getLetter = function() {
@@ -30,12 +50,10 @@ $(function() {
         $uppercase.text(curLetter.toUpperCase());
         $lowercase.text(curLetter);
         audioPlay(curLetter);
-    }
-
-    //当前字母
-    var curLetter = getLetter();
+    };
 
     //初始化
+    var curLetter = getLetter();
     playLetter();
 
     //事件绑定
@@ -60,13 +78,14 @@ $(function() {
         if(keyLetter == curLetter) {
             audioPlay('success');
             $result.addClass('success');
+            speed.nock();
             setTimeout(function() {
                 $result.removeClass('success');
             }, 300);
             setTimeout(function() {
                 curLetter = getLetter();
                 playLetter();
-            }, 500);
+            }, 400);
         } else {
             audioPlay('error');
             $result.addClass('error');
@@ -76,7 +95,7 @@ $(function() {
         }
         setTimeout(function(){
             working = false;
-        }, 500);
+        }, 400);
     });
     $audioCtrl.on('click', function() {
         audioPlay(curLetter);
